@@ -10,11 +10,6 @@ h1{
 
 }
 
-#rafael{
-    color: green;
-    
-}
-
 body {
     display: flex;
     justify-content: center; /* Center horizontally */
@@ -37,7 +32,7 @@ body {
 
 }
 
-.container{
+ .container{ /*no longer using */
     width: 100%;
     display: flex;
     align-items: center;
@@ -45,7 +40,7 @@ body {
 
 }
 
-.heading-container {
+.heading-container { /*no longer using */
     border: 4px solid red;
     padding: 20px;
     margin: 20px auto; /* Center horizontally */
