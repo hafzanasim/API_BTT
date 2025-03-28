@@ -12,9 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
             isCompleted: false
             
         }
-
-        const response = await fetch("http://localhost:8080/task", 
+        try {
             
+        const response = await fetch("http://localhost:8080/task", 
+        
             {
             method: "POST",
             headers: {
@@ -25,11 +26,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         await response.json()
 
-        console.log(response.json)    
+        console.log(response.json)  
 
+        const responseStatus = document.getElementById("responseStatus")
 
-        
-        
+        responseStatus.textContent = "Task created successfully!"
+
+    }catch (error)
+    {
+        const responseStatus = document.getElementById("responseStatus")
+
+        responseStatus.textContent = "Failed"
+    }
+
+    
     })
 
 })
