@@ -16,6 +16,7 @@ body {
     align-items: center; /* Center vertically */
     min-height: 100vh; /* Make sure the body takes up at least the full viewport height */
     margin: 0; /* Remove default body margins */
+    flex-direction: column; /* Stack elements vertically on the body */
 }
 
 #taskForm{
@@ -29,6 +30,9 @@ body {
     margin-right: auto; /* Center horizontally */
     display: block; /* Ensure it behaves as a block element for centering */
     text-align: center; /* Center the content inside the form */
+    position: relative; /* Crucial: Positioning context */
+    /* Added to prevent stretching */
+    max-height: fit-content;
 
 }
 
@@ -49,24 +53,32 @@ body {
         }
 
     
-    .input-area {
-        border: 2px solid black; /* Example border for the inner square */
-        padding: 15px;
-        margin: 10px auto; /* Center horizontally */
-        width: 300px; /* Adjust width as needed */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        }
+.input-area {
+    border: 2px solid black; /* Example border for the inner square */
+    padding: 15px;
+    margin: 10px auto; /* Center horizontally */
+    width: 300px; /* Adjust width as needed */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
 
     
-    .create-task-button {
-        display: block; /* Make it a block element */
-        margin: 20px auto; /* Center horizontally */
-        padding: 10px 20px;
-        background-color: #4CAF50; /* Example color */
-        color: white;
-        border: none;
-        cursor: pointer;
-        }
+.create-task-button {
+    display: block; /* Make it a block element */
+    margin: 20px auto; /* Center horizontally */
+    padding: 10px 20px;
+    background-color: #4CAF50; /* Example color */
+    color: white;
+    border: none;
+    cursor: pointer;
+    }
+
+#responseStatus {
+    text-align: center; /* Center the text */
+    margin-top: 10px; /* Add some space above the message */
+    display: block; /* Ensure it's a block element */
+    width: 100%;
+    position: relative; /* Position it relative to the taskForm */
     
+}
