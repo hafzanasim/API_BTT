@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to delete a task from the server
     async function deleteTaskFromServer(taskId) {
-        const response = await fetch(`http://localhost:8000/task/${taskId}`, { // Corrected port
+        const response = await fetch(`http://localhost:8000/task/delete/${task_id}`, { // Corrected port
             method: 'DELETE',
         });
         if (!response.ok) {
