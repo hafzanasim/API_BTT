@@ -141,8 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function updateTaskCompletion(task_id, isCompleted) {
         const response = await fetch(`http://localhost:8000/${task_id}`, {
             method: 'PUT',
-            });
-
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ isCompleted: true }),
+        });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
