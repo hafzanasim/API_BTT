@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch('http://localhost:8080/task', {
+                const response = await fetch('http://localhost:8000/task', { // Corrected port
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -31,12 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const newTask = await response.json();
-                
+
                 //Re load tasks from server to update
                 await loadTasksFromServer();
-                
+
                 descriptionInput.value = '';
                 responseStatus.textContent = 'Task added successfully!';
                 responseStatus.style.color = 'green';
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Function to render tasks
-     async function renderTasks(tasks) {
+    async function renderTasks(tasks) {
         taskList.innerHTML = ''; // Clear existing tasks
 
         tasks.forEach((task) => {
@@ -65,13 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteButton.classList.add('delete-button');
             deleteButton.textContent = 'Delete';
             deleteButton.addEventListener('click', async () => {
-              try {
-                await deleteTaskFromServer(task.id);
-                await loadTasksFromServer();
-                } catch (error){
-                  console.error('Error deleting task:', error);
-                  responseStatus.textContent = 'Failed to delete task.';
-                  responseStatus.style.color = 'red';
+                try {
+                    await deleteTaskFromServer(task.id);
+                    await loadTasksFromServer();
+                } catch (error) {
+                    console.error('Error deleting task:', error);
+                    responseStatus.textContent = 'Failed to delete task.';
+                    responseStatus.style.color = 'red';
                 }
             });
 
@@ -80,29 +80,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-   // Function to delete a task from the server
-   async function deleteTaskFromServer(taskId) {
-    const response = await fetch(`http://localhost:8080/task/${taskId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // Function to delete a task from the server
+    async function deleteTaskFromServer(taskId) {
+        const response = await fetch(`http://localhost:8000/task/${taskId}`, { // Corrected port
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
     }
-  }
 
-  // Function to load tasks from the server
-  async function loadTasksFromServer() {
-    try {
-      const response = await fetch('http://localhost:8080/tasks');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const tasks = await response.json();
-      renderTasks(tasks);
-    } catch (error) {
-      console.error('Error loading tasks:', error);
-      responseStatus.textContent = 'Failed to load tasks.';
-      responseStatus.style.color = 'red';
+    // Function to load tasks from the server
+    async function loadTasksFromServer() {
+        try {
+            const response = await fetch('http://localhost:8000/tasks'); // Corrected port
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const tasks = await response.json();
+            renderTasks(tasks);
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+            responseStatus.textContent = 'Failed to load tasks.';
+            responseStatus.style.color = 'red';
+        }
     }
-  }
 });
