@@ -65,10 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = task.isCompleted;
             checkbox.addEventListener('change', async () => {
+                const descSpan = document.getElementById(`description-${task.id}`);
+                console.log("Before update: ", descSpan.textContent);
+                
                 try {
                     await updateTaskCompletion(task.id, checkbox.checked);
-                    // Update the specific task item instead of reloading all
                     updateTaskItem(task.id, checkbox.checked);
+                    
+                    console.log("After update: ", descSpan.textContent);
                 } catch (error) {
                     console.error('Error updating task completion:', error);
                     responseStatus.textContent = 'Failed to update task completion.';
@@ -134,8 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Function to update task completion status on the server
-    async function updateTaskCompletion(taskId, isCompleted) {
-        const response = await fetch(`http://localhost:8000/${taskId}`, {
+    async function updateTaskCompletion(task_id, isCompleted) {
+        const response = await fetch(`http://localhost:8000/task/${task_id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

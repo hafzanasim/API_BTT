@@ -1,6 +1,6 @@
 # Import FastAPI and Depends from fastapi
 # FastAPI is the main framework class, Depends is used for dependency injection
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 # Import CORSMiddleware for handling Cross-Origin Resource Sharing
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -55,12 +55,26 @@ def create(task: Task, session: Session = Depends(get_session)):
 
 
 # Endpoint to update a task by ID
-@app.put("/{task_id}")
+@app.put("/task/{task_id}")
 def update(task_id: int, updated: Task, session: Session = Depends(get_session)):
-    # Get task_id from path parameter
-    # Get updated task data from request body
-    # Inject database session and call update_task service function
-    return update_task(task_id, updated, session)
+   # Get the task with the specified ID
+    task = session.get(Task, task_id)
+
+    # If task doesn't exist, return an error message
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    # Update the task's fields with values from the updated task object
+    if "description" in updated:
+        task.description = updated["description"]
+    if "isComplete" in updated:
+        task.isComplete = updated["isComplete"]
+    # Commit the changes to the database
+    session.commit()
+    # Refresh the task with data from the database
+    session.refresh(task)
+    
+    return task
 
 
 # Endpoint to delete a task by ID
