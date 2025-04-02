@@ -4,29 +4,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskList = document.getElementById('taskList');
     const responseStatus = document.getElementById('responseStatus');
 
-    // Load tasks from local storage
-    let tasks = loadTasks();
+    // Load tasks from the server on page load
+    loadTasksFromServer();
 
-    // Render tasks on page load
-    renderTasks(tasks);
-
-    taskForm.addEventListener('submit', (event) => {
+    taskForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
         const descriptionInput = document.getElementById('description');
         const description = descriptionInput.value.trim();
 
         if (description) {
-            // Add the task
-            const newTask = addTask(description, tasks);
-            // Render the task
-            renderTasks(tasks);
-            // Save the tasks to local storage
-            saveTasks(tasks);
-            // Clear the input field
-            descriptionInput.value = '';
-            responseStatus.textContent = 'Task added successfully!';
-            responseStatus.style.color = 'green';
+            const taskData = {
+                description: description,
+                isCompleted: false,
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/task', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(taskData),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const newTask = await response.json();
+                
+                //Re load tasks from server to update
+                await loadTasksFromServer();
+                
+                descriptionInput.value = '';
+                responseStatus.textContent = 'Task added successfully!';
+                responseStatus.style.color = 'green';
+            } catch (error) {
+                console.error('Error adding task:', error);
+                responseStatus.textContent = 'Failed to add task.';
+                responseStatus.style.color = 'red';
+            }
         } else {
             responseStatus.textContent = 'Please enter a task description.';
             responseStatus.style.color = 'red';
@@ -34,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Function to render tasks
-    function renderTasks(tasks) {
+     async function renderTasks(tasks) {
         taskList.innerHTML = ''; // Clear existing tasks
 
         tasks.forEach((task) => {
@@ -46,10 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const deleteButton = document.createElement('button');
             deleteButton.classList.add('delete-button');
             deleteButton.textContent = 'Delete';
-            deleteButton.addEventListener('click', () => {
-                deleteTask(task.id, tasks);
-                renderTasks(tasks);
-                saveTasks(tasks);
+            deleteButton.addEventListener('click', async () => {
+              try {
+                await deleteTaskFromServer(task.id);
+                await loadTasksFromServer();
+                } catch (error){
+                  console.error('Error deleting task:', error);
+                  responseStatus.textContent = 'Failed to delete task.';
+                  responseStatus.style.color = 'red';
+                }
             });
 
             taskItem.appendChild(deleteButton);
@@ -57,32 +80,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Function to add a task
-    function addTask(description, tasks) {
-        const newTask = {
-            id: Date.now(), // Unique ID for each task
-            description: description,
-        };
-        tasks.push(newTask);
-        return newTask;
+   // Function to delete a task from the server
+   async function deleteTaskFromServer(taskId) {
+    const response = await fetch(`http://localhost:8080/task/${taskId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+  }
 
-    // Function to delete a task
-    function deleteTask(taskId, tasks) {
-        const taskIndex = tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            tasks.splice(taskIndex, 1);
-        }
+  // Function to load tasks from the server
+  async function loadTasksFromServer() {
+    try {
+      const response = await fetch('http://localhost:8080/tasks');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const tasks = await response.json();
+      renderTasks(tasks);
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+      responseStatus.textContent = 'Failed to load tasks.';
+      responseStatus.style.color = 'red';
     }
-
-    // Function to save tasks to local storage
-    function saveTasks(tasks) {
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-    }
-
-    // Function to load tasks from local storage
-    function loadTasks() {
-        const storedTasks = localStorage.getItem('tasks');
-        return storedTasks ? JSON.parse(storedTasks) : [];
-    }
+  }
 });
