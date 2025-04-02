@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to load tasks from the server
     async function loadTasksFromServer() {
         try {
-            const response = await fetch('http://localhost:8000/tasks'); // Corrected port
+            const response = await fetch(`http://localhost:8000/get-task/${taskId}`); // Corrected port
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
