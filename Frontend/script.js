@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to update task completion status on the server
     async function updateTaskCompletion(taskId, isCompleted) {
-        const response = await fetch(`http://localhost:8000/task/${taskId}`, {
+        const response = await fetch(`http://localhost:8000/${taskId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
