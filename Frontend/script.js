@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks.forEach((task) => {
             const taskItem = document.createElement('li');
             taskItem.classList.add('task-item');
-            taskItem.id = task.id;
+            taskItem.id = `task-${task.id}`; // Add task- prefix to id
 
             // Create checkbox
             const checkbox = document.createElement('input');
@@ -67,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.addEventListener('change', async () => {
                 try {
                     await updateTaskCompletion(task.id, checkbox.checked);
-                    await loadTasksFromServer();
+                    // Update the specific task item instead of reloading all
+                    updateTaskItem(task.id, checkbox.checked);
                 } catch (error) {
                     console.error('Error updating task completion:', error);
                     responseStatus.textContent = 'Failed to update task completion.';
@@ -78,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Create task description span
             const descriptionSpan = document.createElement('span');
             descriptionSpan.textContent = task.description;
+            descriptionSpan.id = `description-${task.id}`; // Add description- prefix to id
             if (task.isCompleted) {
                 descriptionSpan.style.textDecoration = 'line-through';
             }
@@ -133,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to update task completion status on the server
     async function updateTaskCompletion(taskId, isCompleted) {
-        const response = await fetch(`http://localhost:8000/${taskId}`, {
+        const response = await fetch(`http://localhost:8000/task/${taskId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -142,6 +144,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    }
+
+    // Function to update a single task item in the UI
+    function updateTaskItem(taskId, isCompleted) {
+        const taskItem = document.getElementById(`task-${taskId}`);
+        const descriptionSpan = document.getElementById(`description-${taskId}`);
+
+        if (taskItem && descriptionSpan) {
+            const checkbox = taskItem.querySelector('input[type="checkbox"]');
+            checkbox.checked = isCompleted;
+
+            if (isCompleted) {
+                descriptionSpan.style.textDecoration = 'line-through';
+            } else {
+                descriptionSpan.style.textDecoration = 'none';
+            }
         }
     }
 });
