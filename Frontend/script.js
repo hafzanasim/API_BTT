@@ -1,45 +1,88 @@
+// script.js
+document.addEventListener('DOMContentLoaded', () => {
+    const taskForm = document.getElementById('taskForm');
+    const taskList = document.getElementById('taskList');
+    const responseStatus = document.getElementById('responseStatus');
 
-document.addEventListener("DOMContentLoaded", function () {
+    // Load tasks from local storage
+    let tasks = loadTasks();
 
-    document.getElementById("taskForm").addEventListener("submit", async function (event) {
-        
-        event.preventDefault()
+    // Render tasks on page load
+    renderTasks(tasks);
 
-        const description = document.getElementById("description").value
+    taskForm.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-        const taskData = {
-            description: description,
-            isCompleted: false
-            
+        const descriptionInput = document.getElementById('description');
+        const description = descriptionInput.value.trim();
+
+        if (description) {
+            // Add the task
+            const newTask = addTask(description, tasks);
+            // Render the task
+            renderTasks(tasks);
+            // Save the tasks to local storage
+            saveTasks(tasks);
+            // Clear the input field
+            descriptionInput.value = '';
+            responseStatus.textContent = 'Task added successfully!';
+            responseStatus.style.color = 'green';
+        } else {
+            responseStatus.textContent = 'Please enter a task description.';
+            responseStatus.style.color = 'red';
         }
-        try {
-            
-        const response = await fetch("http://localhost:8080/task", 
-        
-            {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(taskData)
-        })
+    });
 
-        await response.json()
+    // Function to render tasks
+    function renderTasks(tasks) {
+        taskList.innerHTML = ''; // Clear existing tasks
 
-        console.log(response.json)  
+        tasks.forEach((task) => {
+            const taskItem = document.createElement('li');
+            taskItem.classList.add('task-item');
+            taskItem.id = task.id;
+            taskItem.textContent = task.description;
 
-        const responseStatus = document.getElementById("responseStatus")
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete-button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', () => {
+                deleteTask(task.id, tasks);
+                renderTasks(tasks);
+                saveTasks(tasks);
+            });
 
-        responseStatus.textContent = "Task created successfully!"
-
-    }catch (error)
-    {
-        const responseStatus = document.getElementById("responseStatus")
-
-        responseStatus.textContent = "Failed"
+            taskItem.appendChild(deleteButton);
+            taskList.appendChild(taskItem);
+        });
     }
 
-    
-    })
+    // Function to add a task
+    function addTask(description, tasks) {
+        const newTask = {
+            id: Date.now(), // Unique ID for each task
+            description: description,
+        };
+        tasks.push(newTask);
+        return newTask;
+    }
 
-})
+    // Function to delete a task
+    function deleteTask(taskId, tasks) {
+        const taskIndex = tasks.findIndex((task) => task.id === taskId);
+        if (taskIndex !== -1) {
+            tasks.splice(taskIndex, 1);
+        }
+    }
+
+    // Function to save tasks to local storage
+    function saveTasks(tasks) {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    // Function to load tasks from local storage
+    function loadTasks() {
+        const storedTasks = localStorage.getItem('tasks');
+        return storedTasks ? JSON.parse(storedTasks) : [];
+    }
+});

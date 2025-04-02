@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BTT Task Frontend</title>
+    <title>BTT Task Tracker</title>
     <script defer src="script.js"></script>
     <link rel="stylesheet" href="./styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-<form id="taskForm">
-
-        <h1>BTT Task Frontend</h1>
-        <div class="input-area">
-            <label for="description">Task Description</label>
-            <input type="text" id="description" name="description" required>
-        </div>
-        <button type="submit" class="create-task-button">Create Task</button>
-        
-        <p id="responseStatus"></p>
-</form>
-   
+    <main class="container">
+        <section class="task-form-section">
+            <h1 class="main-title">✨ BTT Task Tracker ✨</h1>
+            <form id="taskForm" class="task-form">
+                <div class="input-group">
+                    <label for="description" class="input-label">Task Description</label>
+                    <input type="text" id="description" name="description" class="input-field" placeholder="e.g., Finish project proposal">
+                </div>
+                <button type="submit" class="create-task-button">Add Task</button>
+                <p id="responseStatus" class="response-message"></p>
+            </form>
+        </section>
+        <section class="task-list-section">
+            <h2 class="task-list-title">Your Tasks</h2>
+            <ul id="taskList" class="task-list">
+                <!-- Tasks will be added here by JavaScript -->
+            </ul>
+        </section>
+    </main>
 </body>
 </html>
